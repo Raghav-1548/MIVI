@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIVI AI Consultation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0c0c0c, #1a1a1a);
+            min-height: 100vh;
+            color: #e0e0ff;
+        }
+
+        .neon-text {
+            text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff, 0 0 15px #00ffff, 0 0 20px #00ffff;
+        }
+
+        .neon-border {
+            box-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff, 0 0 15px #00ffff, 0 0 20px #00ffff;
+        }
+
+        .btn-gradient {
+            background-color: #1f1f1f;
+            transition: all 0.3s ease;
+        }
+
+        .btn-gradient:hover {
+            background-image: linear-gradient(to right, #00796b, #3d5afe, #ff5722);
+            background-size: 200% auto;
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 255, 255, 0.2);
+        }
+
+        .input-box {
+            background-color: #222;
+            color: #e0e0ff;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            padding: 12px;
+            width: 100%;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-box:focus {
+            border-color: #00ffff;
+        }
+
+        .input-label {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .chat-box {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #00ffff;
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 15px;
+        }
+
+        .dialog-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            visibility: hidden;
+        }
+
+        .dialog-box {
+            background-color: #0c0c0c;
+            padding: 20px;
+            border-radius: 15px;
+            max-width: 700px;
+            width: 90%;
+            height: 80vh;
+            border: 3px solid #00ffff;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dialog-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+    </style>
+</head>
+
+<body class="flex flex-col min-h-screen">
+    <header class="p-5 flex justify-between items-center bg-black bg-opacity-50 border-b-2 border-gradient-to-r from-cyan-500 to-blue-500">
+        <div class="logo neon-text text-2xl">MIVI <i class="fas fa-heartbeat ml-2"></i></div>
+        <nav class="flex space-x-4">
+            <a href="{{ url_for('homescreen') }}" class="hover:text-cyan-100 transition duration-300"><i class="fas fa-home"></i> Home</a>
+            <a href="{{ url_for('contactdoc') }}" class="hover:text-cyan-100 transition duration-300">MIVI-Doc</a>
+            <a href="{{ url_for('myrecords') }}" class="hover:text-cyan-100 transition duration-300"><i class="fas fa-folder-open"></i> My Records</a>
+            <span id="wallet-status" class="text-gray-400">Not Connected</span>
+        </nav>
+    </header>
+
+    <main class="flex-grow flex flex-col items-center justify-center px-4 py-10">
+        <h1 class="text-4xl font-bold mb-8 text-center neon-text"><i class="fas fa-stethoscope"></i> MIVI Consultation</h1>
+
+        <div class="chat-box w-full max-w-xl">
+            <div class="ai-response">
+                <strong>AI:</strong> Welcome to MIVI's AI consultation. Please describe your symptoms or health concerns.
+            </div>
+        </div>
+
+        <div class="w-full max-w-xl space-y-4 mt-8">
+            <label for="patient-name" class="input-label"><i class="fas fa-user"></i> Patient Name</label>
+            <input type="text" id="patient-name" class="input-box" placeholder="Enter patient name">
+
+            <label for="age" class="input-label"><i class="fas fa-user"></i> Age</label>
+            <input type="number" id="age" class="input-box" placeholder="Enter your age">
+
+            <label for="gender" class="input-label"><i class="fas fa-venus-mars"></i> Gender</label>
+            <select id="gender" class="input-box">
+                <option value="" disabled selected>Select your gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+            </select>
+
+            <label for="combined-input" class="input-label"><i class="fas fa-notes-medical"></i> Pre-medical History & Current Symptoms</label>
+            <textarea id="combined-input" class="input-box" rows="6" placeholder="Describe pre-medical history and current symptoms"></textarea>
+
+            <button id="connect-wallet" class="btn-gradient text-white font-semibold py-3 px-6 rounded-lg neon-border w-full mt-4">
+                <i class="fas fa-plug mr-2"></i> Connect to MetaMask
+            </button>
+
+            <button id="submit-symptoms" class="btn-gradient text-white font-semibold py-3 px-6 rounded-lg neon-border w-full mt-4" disabled>
+                <i class="fas fa-paper-plane mr-2"></i> Submit Symptoms
+            </button>
+        </div>
+
+        <div id="dialog-overlay" class="dialog-overlay">
+            <div class="dialog-box">
+                <div class="dialog-content">
+                    <h3 class="text-2xl mb-6"><i class="fas fa-robot"></i> MIVI Response</h3>
+                    <p class="mb-4"><i class="fas fa-stethoscope"></i> <strong>Initial Assessment:</strong> <span id="ai-assessment"></span></p>
+                    <div id="blockchain-status" class="mt-4 text-yellow-400 hidden">
+                        Storing consultation data on blockchain...
+                    </div>
+                </div>
+                <div class="dialog-buttons flex justify-between mt-4">
+                    <button class="btn-gradient text-white font-semibold py-2 px-4 rounded-lg neon-border" onclick="saveResults()">
+                        <i class="fas fa-save mr-2"></i> Save Results
+                    </button>
+                    <button class="btn-gradient text-white font-semibold py-2 px-4 rounded-lg neon-border" onclick="endConsultation()">
+                        <i class="fas fa-times mr-2"></i> End Consultation
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="p-4 bg-black bg-opacity-50 text-center text-gray-400 text-sm">
+        MIVI Consultation © 2024
+    </footer>
+
+    <script>
+        let web3;
+        let contract;
+        let contractAddress;
+        let contractABI;
+
+        document.getElementById("connect-wallet").addEventListener("click", async () => {
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    web3 = new Web3(window.ethereum);
+                    contractAddress = "0xD8651C1692163f1110953F6098572c7c63b028bD";
+                    contractABI = [
+                        {
+                            "anonymous": false,
+                            "inputs": [
+                                {
+                                    "indexed": true,
+                                    "internalType": "address",
+                                    "name": "patient",
+                                    "type": "address"
+                                },
+                                {
+                                    "indexed": false,
+                                    "internalType": "uint256",
+                                    "name": "timestamp",
+                                    "type": "uint256"
+                                }
+                            ],
+                            "name": "ConsultationAdded",
+                            "type": "event"
+                        },
+                        {
+                            "inputs": [
+                                {
+                                    "internalType": "string",
+                                    "name": "_patientName",
+                                    "type": "string"
+                                },
+                                {
+                                    "internalType": "uint256",
+                                    "name": "_age",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "internalType": "string",
+                                    "name": "_gender",
+                                    "type": "string"
+                                },
+                                {
+                                    "internalType": "string",
+                                    "name": "_symptoms",
+                                    "type": "string"
+                                },
+                                {
+                                    "internalType": "string",
+                                    "name": "_aiResponse",
+                                    "type": "string"
+                                }
+                            ],
+                            "name": "addConsultation",
+                            "outputs": [],
+                            "stateMutability": "nonpayable",
+                            "type": "function"
+                        },
+                        {
+                            "inputs": [],
+                            "name": "getConsultations",
+                            "outputs": [
+                                {
+                                    "components": [
+                                        {
+                                            "internalType": "string",
+                                            "name": "patientName",
+                                            "type": "string"
+                                        },
+                                        {
+                                            "internalType": "uint256",
+                                            "name": "age",
+                                            "type": "uint256"
+                                        },
+                                        {
+                                            "internalType": "string",
+                                            "name": "gender",
+                                            "type": "string"
+                                        },
+                                        {
+                                            "internalType": "string",
+                                            "name": "symptoms",
+                                            "type": "string"
+                                        },
+                                        {
+                                            "internalType": "string",
+                                            "name": "aiResponse",
+                                            "type": "string"
+                                        },
+                                        {
+                                            "internalType": "uint256",
+                                            "name": "timestamp",
+                                            "type": "uint256"
+                                        }
+                                    ],
+                                    "internalType": "struct MIVIConsultation.Consultation[]",
+                                    "name": "",
+                                    "type": "tuple[]"
+                                }
+                            ],
+                            "stateMutability": "view",
+                            "type": "function",
+                            "constant": true
+                        }
+                    ];
+                    
+                    contract = new web3.eth.Contract(contractABI, contractAddress);
+                    
+                    document.getElementById("wallet-status").innerText = "Wallet Connected";
+                    document.getElementById("submit-symptoms").disabled = false;
+                } catch (error) {
+                    console.error("Failed to connect to MetaMask", error);
+                    alert("Failed to connect to MetaMask. Please try again.");
+                }
+            } else {
+                alert("Please install MetaMask!");
+            }
+        });
+
+        document.getElementById("submit-symptoms").addEventListener("click", async () => {
+            const name = document.getElementById("patient-name").value;
+            const age = document.getElementById("age").value;
+            const gender = document.getElementById("gender").value;
+            const symptoms = document.getElementById("combined-input").value;
+
+            document.getElementById("dialog-overlay").style.visibility = 'visible';
+            document.getElementById("blockchain-status").classList.remove("hidden");
+            document.getElementById("blockchain-status").innerText = "Fetching AI response...";
+
+            try {
+                const response = await fetch('/api/submit-symptoms', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        'age': age,
+                        'gender': gender,
+                        'symptoms': symptoms
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const aiResponse = data.response;
+
+                document.getElementById("ai-assessment").innerHTML = aiResponse.replace(/\n/g, '<br>');
+                document.getElementById("blockchain-status").innerText = "AI response received. Storing consultation data on blockchain...";
+
+                const accounts = await web3.eth.getAccounts();
+                const account = accounts[0];
+
+                await contract.methods.addConsultation(name, parseInt(age), gender, symptoms, aiResponse)
+                    .send({ from: account });
+
+                console.log("Consultation stored in blockchain");
+                document.getElementById("blockchain-status").innerText = "Consultation data stored on blockchain successfully!";
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById("blockchain-status").innerText = "Failed to process consultation. Please try again.";
+            }
+        });
+
+
+        function saveResults() 
+        {
+            const name = document.getElementById("patient-name").value;
+            const age = document.getElementById("age").value;
+            const gender = document.getElementById("gender").value;
+            const symptoms = document.getElementById("combined-input").value;
+            const aiResponse = document.getElementById("ai-assessment").innerHTML;
+            const consultationData = {
+                name: name,
+                age: age,
+                gender: gender,
+                symptoms: symptoms,
+                aiResponse: aiResponse,
+                date: new Date().toLocaleString()
+    };
+
+    let savedConsultations = JSON.parse(localStorage.getItem('savedConsultations')) || [];
+    savedConsultations.push(consultationData);
+    localStorage.setItem('savedConsultations', JSON.stringify(savedConsultations));
+
+    alert('Consultation results saved successfully!');
+}
+
+        function endConsultation() {
+            document.getElementById("dialog-overlay").style.visibility = 'hidden';
+            document.getElementById("patient-name").value = '';
+            document.getElementById("age").value = '';
+            document.getElementById("gender").value = '';
+            document.getElementById("combined-input").value = '';
+            document.getElementById("ai-assessment").innerHTML = '';
+            document.getElementById("blockchain-status").classList.add("hidden");
+        }
+    </script>
+</body>
+
+</html>

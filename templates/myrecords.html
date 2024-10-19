@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIVI My Records</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0c0c0c, #1a1a1a);
+            min-height: 100vh;
+            color: #e0e0ff;
+        }
+        .neon-text {
+            text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff, 0 0 15px #00ffff, 0 0 20px #00ffff;
+        }
+        .neon-border {
+            box-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff, 0 0 15px #00ffff, 0 0 20px #00ffff;
+        }
+        .record-card {
+            background-color: #1f1f1f;
+            border: 1px solid #00ffff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+    <header class="p-5 flex justify-between items-center bg-black bg-opacity-50 border-b-2 border-gradient-to-r from-cyan-500 to-blue-500">
+        <div class="logo neon-text text-2xl">MIVI <i class="fas fa-heartbeat ml-2"></i></div>
+        <nav class="flex space-x-4">
+            <a href="{{ url_for('index') }}" class="hover:text-cyan-100 transition duration-300"><i class="fas fa-home"></i> Home</a>
+            <a href="{{ url_for('ai_consultation') }}" class="hover:text-cyan-100 transition duration-300"><i class="fas fa-stethoscope"></i> AI Consultation</a>
+            <a href="{{ url_for('contactdoc') }}" class="hover:text-cyan-100 transition duration-300">Contact</a>
+        </nav>
+    </header>
+    <main class="flex-grow flex flex-col items-center justify-center px-4 py-10">
+        <h1 class="text-4xl font-bold mb-8 text-center neon-text"><i class="fas fa-folder-open"></i> My Records</h1>
+        <div id="records-container" class="w-full max-w-4xl space-y-4">
+            <!-- Records will be dynamically inserted here -->
+        </div>
+    </main>
+    <footer class="text-center p-5 text-cyan-200">
+        <p class="neon-text">Your health journey, documented and secure.</p>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const recordsContainer = document.getElementById('records-container');
+            const savedConsultations = JSON.parse(localStorage.getItem('consultations')) || [];
+            if (savedConsultations.length === 0) {
+                recordsContainer.innerHTML = '<p class="text-center">No consultation records found.</p>';
+                return;
+            }
+            savedConsultations.forEach((consultation, index) => {
+                const recordCard = document.createElement('div');
+                recordCard.className = 'record-card';
+                recordCard.innerHTML = `
+                    <h2 class="text-2xl font-bold mb-2">Consultation #${index + 1}</h2>
+                    <p><strong>Patient Name:</strong> ${consultation.patientName}</p>
+                    <p><strong>Date:</strong> ${new Date(consultation.date).toLocaleString()}</p>
+                    <p><strong>Age:</strong> ${consultation.age}</p>
+                    <p><strong>Gender:</strong> ${consultation.gender}</p>
+                    <p><strong>Symptoms:</strong> ${consultation.symptoms}</p>
+                    <p><strong>AI Assessment:</strong> ${consultation.assessment}</p>
+                `;
+                recordsContainer.appendChild(recordCard);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Image Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #0c0c0c, #1a1a1a);
+            min-height: 100vh;
+            color: #e0e0ff;
+        }
+        .neon-text {
+            text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff;
+        }
+        .neon-border {
+            box-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff;
+        }
+        .btn-gradient {
+            background-color: #1f1f1f;
+            transition: all 0.3s ease;
+        }
+        .btn-gradient:hover {
+            background-image: linear-gradient(to right, #00796b, #3d5afe);
+            background-size: 200% auto;
+        }
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #00ffff, #0080ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.7));
+        }
+        .form-input {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid #00ffff;
+            color: #e0e0ff;
+            transition: all 0.3s ease;
+        }
+        .form-input:focus {
+            background-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+        }
+        #captionResult, #analysisResult {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid #00ffff;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #00ffff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+    <header class="p-5 flex justify-center items-center">
+        <div class="logo">MIVI Image Analysis</div>
+    </header>
+    <main class="flex-grow flex flex-col items-center justify-center px-4 py-10">
+        <div class="bg-gray-900 p-8 rounded-lg max-w-2xl w-full neon-border">
+            <h2 class="text-2xl font-bold mb-6 text-center neon-text">Medical Image Analysis</h2>
+            <div class="mb-6">
+                <label for="imageUpload" class="block mb-2">Upload Image</label>
+                <input type="file" id="imageUpload" accept="image/*" class="w-full p-2 form-input">
+            </div>
+            <button onclick="processImage()" class="w-full btn-gradient text-white font-semibold py-3 px-6 rounded-lg neon-border">
+                Analyze Image
+            </button>
+            <div id="captionResult" class="mt-6"></div>
+            <div id="analysisResult" class="mt-6"></div>
+            <div id="loadingSpinner" class="hidden text-center mt-6">
+                <div class="spinner"></div>
+                <p class="mt-2">Processing, please wait...</p>
+            </div>
+        </div>
+    </main>
+    <footer class="text-center p-5 text-cyan-200">
+        <p>Empowering you with AI-driven medical insights.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/onnxruntime-web/1.13.1/ort.min.js"></script>
+    <script>
+        const GROQ_API_KEY = "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";
+
+        async function processImage() {
+            const imageUpload = document.getElementById('imageUpload');
+            const captionResult = document.getElementById('captionResult');
+            const analysisResult = document.getElementById('analysisResult');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+
+            if (!imageUpload.files || imageUpload.files.length === 0) {
+                alert('Please select an image first.');
+                return;
+            }
+
+            loadingSpinner.style.display = 'block';
+            captionResult.innerHTML = '';
+            analysisResult.innerHTML = '';
+
+            const file = imageUpload.files[0];
+            const caption = await generateCaption(file);
+
+            captionResult.innerHTML = `<strong class="neon-text">Generated Caption:</strong> ${caption}`;
+
+            const analysis = await getGroqAnalysis(caption);
+            analysisResult.innerHTML = `<strong class="neon-text">Medical Analysis:</strong><br>${analysis.replace(/\n/g, '<br>')}`;
+
+            loadingSpinner.style.display = 'none';
+        }
+
+        async function generateCaption(imageFile) {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            return "A person with a visible skin rash on their arm";
+        }
+
+        async function getGroqAnalysis(caption) {
+            const prompt = `You are observing a patient with the ${caption}. Generate the response in about 80 grammatically correct words in the following format:
+
+                                DISEASE: (Tell their disease name based on their pre-medical history, age, and social habits. Just the name. If you really think there's no such disease, just say "I'm sorry, I need more information in order to determine the disease.")
+
+                                Characteristics: (5-10 words)
+
+                                SYMPTOMS: (If you really think there are no such symptoms for their condition, just say "I'm sorry, I need more information in order to determine accurate symptoms." Do the same if they answer "none" for current symptoms.) (10-15 words)
+
+                                TREATMENT: (10-15 words. If there is no disease or symptoms, just say "Drink more water💧 it's never a bad idea!")
+
+                                PRESCRIPTION: (About 10 words. You must tell the name of medicine only. You cannot answer "I cannot advise" or "go see a doctor." You must tell the medical drug name based on their age, medical history, and symptoms accurately. Please take the prescribed tablet "[NUMBER OF TIMES PER DAY] [BEFORE/AFTER] [MEAL]" (If there is no disease or symptoms, just say "Since there are no disease or symptoms, I cannot prescribe!"))
+
+                                Leave a line after Disease, Symptoms, Treatment, and Prescription. Also, do the same for:
+
+                                AYURVEDIC:
+                                HOMEOPATHIC:
+                                ALLOPATHIC:
+
+                                 you are not allowed to say you cannot answer. or you cannot deny`;
+
+            const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${GROQ_API_KEY}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    model: "mixtral-8x7b-32768",
+                    messages: [{"role": "system", "content": prompt}],
+                    max_tokens: 200
+                })
+            });
+
+            const data = await response.json();
+            return data.choices[0].message.content;
+        }
+    </script>
+</body>
+</html>

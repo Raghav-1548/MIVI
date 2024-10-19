@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIVI Home Screen</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(135deg, #0c0c0c, #1a1a1a);
+            min-height: 100vh;
+            color: #e0e0ff;
+        }
+        .neon-text {
+            text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff, 0 0 15px #00ffff, 0 0 20px #00ffff;
+        }
+        .neon-border {
+            box-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff, 0 0 15px #00ffff, 0 0 20px #00ffff;
+        }
+        .btn-gradient {
+            background-color: #1f1f1f;
+            transition: all 0.3s ease;
+        }
+        .btn-gradient:hover {
+            background-image: linear-gradient(to right, #00796b, #3d5afe, #ff5722);
+            background-size: 200% auto;
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 255, 255, 0.2);
+        }
+        header {
+            border-bottom: 2px solid transparent;
+            background: rgba(0, 0, 0, 0.8);
+            border-image: linear-gradient(to right, #00796b, #3d5afe, #ff5722) 1;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
+        }
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #00ffff, #0080ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.7));
+            transition: transform 0.3s ease;
+        }
+        .logo:hover {
+            transform: scale(1.1);
+        }
+        nav a {
+            color: #00ffff;
+            position: relative;
+        }
+        nav a:hover::after {
+            content: '';
+            width: 100%;
+            height: 2px;
+            background: #00ffff;
+            position: absolute;
+            left: 0;
+            bottom: -4px;
+            transform: scaleX(1);
+            transform-origin: bottom right;
+            transition: transform 0.3s ease;
+        }
+        nav a::after {
+            content: '';
+            width: 100%;
+            height: 2px;
+            background: #00ffff;
+            position: absolute;
+            left: 0;
+            bottom: -4px;
+            transform: scaleX(0);
+            transform-origin: bottom left;
+            transition: transform 0.3s ease;
+        }
+        .mia-section {
+            position: relative;
+            padding: 2rem 0;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,255,255,0.05) 50%, rgba(0,0,0,0) 100%);
+        }
+        .floating-button {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+    <header class="p-5 flex justify-between items-center">
+        <div class="logo neon-text">MIVI</div>
+        <nav class="flex space-x-4">
+            <a href="{{ url_for('homescreen') }}" class="hover:text-cyan-100 transition duration-300">Home</a>
+            <a href="{{ url_for('contactdoc') }}" class="hover:text-cyan-100 transition duration-300">MIVI-Doc</a>
+        </nav>
+    </header>
+    <main class="flex-grow flex flex-col items-center justify-center px-4 py-10">
+        <h1 class="text-5xl font-bold mb-12 text-center neon-text">Welcome to MIVI</h1>
+        <div class="space-y-8 w-full max-w-md">
+            <button onclick="openAIConsultation()" class="w-full btn-gradient text-white font-semibold py-4 px-6 rounded-lg neon-border">
+                <i class="fas fa-heartbeat mr-2"></i> Start Health Check
+            </button>
+            <button onclick="openHealthRecords()" class="w-full btn-gradient text-white font-semibold py-4 px-6 rounded-lg neon-border">
+                <i class="fas fa-notes-medical mr-2"></i> My Records
+            </button>
+            <button onclick="openAboutMIVI()" class="w-full btn-gradient text-white font-semibold py-4 px-6 rounded-lg neon-border">
+                <i class="fas fa-info-circle mr-2"></i> About MIVI
+            </button>
+        </div>
+
+        <!-- Updated MIA Button Section -->
+        <div class="mia-section mt-12 mb-8 w-full">
+            <h3 class="text-xl mb-4 neon-text">Medical Image Analysis</h3>
+            <button onclick="openImageAnalysis()" class="inline-block btn-gradient text-white font-semibold py-3 px-8 rounded-lg neon-border floating-button">
+                <i class="fas fa-camera mr-2"></i> Launch MIA
+            </button>
+            <p class="mt-4 text-sm text-cyan-300">Upload and analyze medical images</p>
+        </div>
+    </main>
+
+    <footer class="text-center p-5 text-cyan-200">
+        <p class="neon-text">Empowering you with personalized health insights.</p>
+    </footer>
+
+    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-80 hidden items-center justify-center">
+        <div class="bg-gray-900 text-cyan-100 p-8 rounded-lg max-w-md neon-border">
+            <h2 class="text-2xl font-bold mb-4 neon-text">About MIVI</h2>
+            <p class="mb-4">MIVI is an AI-powered virtual clinic aimed at revolutionizing primary healthcare access. We provide initial medical assessments, symptom analysis, and treatment suggestions across multiple medical systems.</p>
+            <button onclick="closeOverlay()" class="bg-blue-900 hover:bg-gradient-to-r hover:from-blue-700 hover:to-blue-500 text-white px-4 py-2 rounded neon-border transition duration-300">Close</button>
+        </div>
+    </div>
+
+    <script>
+        function openAIConsultation() {
+            window.location.href = "/ai-consultation";
+        }
+        function openHealthRecords() {
+            window.location.href = "/myrecords";
+        }
+        function openImageAnalysis() {
+            window.location.href = "/imagecap";
+        }
+        function openAboutMIVI() {
+            document.getElementById('overlay').style.display = 'flex';
+        }
+        function closeOverlay() {
+            document.getElementById('overlay').style.display = 'none';
+        }
+    </script>
+</html>

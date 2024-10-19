@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIVI-Docs: Find Local Healthcare Professionals</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(135deg, #0c0c0c, #1a1a1a);
+            min-height: 100vh;
+            color: #e0e0ff;
+        }
+        .neon-text {
+            text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff, 0 0 15px #00ffff, 0 0 20px #00ffff;
+        }
+        .neon-border {
+            box-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff, 0 0 15px #00ffff, 0 0 20px #00ffff;
+        }
+        .btn-gradient {
+            background-color: #1f1f1f;
+            transition: all 0.3s ease;
+        }
+        .btn-gradient:hover {
+            background-image: linear-gradient(to right, #00796b, #3d5afe, #ff5722);
+            background-size: 200% auto;
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 255, 255, 0.2);
+        }
+        header {
+            border-bottom: 2px solid transparent;
+            background: rgba(0, 0, 0, 0.8);
+            border-image: linear-gradient(to right, #00796b, #3d5afe, #ff5722) 1;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
+        }
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #00ffff, #0080ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.7));
+            transition: transform 0.3s ease;
+        }
+        .logo:hover {
+            transform: scale(1.1);
+        }
+        nav a {
+            color: #00ffff;
+            position: relative;
+        }
+        nav a:hover::after {
+            content: '';
+            width: 100%;
+            height: 2px;
+            background: #00ffff;
+            position: absolute;
+            left: 0;
+            bottom: -4px;
+            transform: scaleX(1);
+            transform-origin: bottom right;
+            transition: transform 0.3s ease;
+        }
+        nav a::after {
+            content: '';
+            width: 100%;
+            height: 2px;
+            background: #00ffff;
+            position: absolute;
+            left: 0;
+            bottom: -4px;
+            transform: scaleX(0);
+            transform-origin: bottom left;
+            transition: transform 0.3s ease;
+        }
+        .doctor-card {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #00ffff;
+            transition: all 0.3s ease;
+        }
+        .doctor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+    <header class="p-5 flex justify-between items-center">
+        <div class="logo neon-text">MIVI</div>
+        <nav class="flex space-x-4">
+            <a href="{{ url_for('homescreen') }}" class="hover:text-cyan-100 transition duration-300">Home</a>
+            <a href="{{ url_for('contactdoc') }}" class="hover:text-cyan-100 transition duration-300">MIVI-Doc</a>
+        </nav>
+    </header>
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold mb-8 text-center neon-text">MIVI-Docs: Find Local Healthcare Professionals</h1>
+
+        <div class="mb-8">
+            <label for="distance" class="block mb-2 neon-text">Filter by distance:</label>
+            <select id="distance" class="bg-gray-800 text-cyan-100 rounded p-2 w-full max-w-xs neon-border">
+                <option value="5">Within 5 miles</option>
+                <option value="10">Within 10 miles</option>
+                <option value="20">Within 20 miles</option>
+                <option value="50">Within 50 miles</option>
+            </select>
+            <button onclick="filterDoctors()" class="mt-4 btn-gradient text-white font-semibold py-2 px-4 rounded-lg neon-border">
+                Apply Filter
+            </button>
+        </div>
+
+        <div id="doctorList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Doctor profiles will be dynamically inserted here -->
+        </div>
+    </main>
+
+    <footer class="text-center p-5 text-cyan-200">
+        <p class="neon-text">Connecting you with the best healthcare professionals in your area.</p>
+    </footer>
+
+    <script>
+        const doctors = [
+            { name: "Dr. Sarah Johnson", specialty: "General Practitioner", distance: 3 },
+            { name: "Dr. Michael Chen", specialty: "Cardiologist", distance: 7 },
+            { name: "Dr. Emily Rodriguez", specialty: "Pediatrician", distance: 12 },
+            { name: "Dr. David Kim", specialty: "Dermatologist", distance: 18 },
+            { name: "Dr. Lisa Patel", specialty: "Neurologist", distance: 25 },
+            { name: "Dr. James Wilson", specialty: "Orthopedic Surgeon", distance: 30 }
+        ];
+
+        function createDoctorCard(doctor) {
+            return `
+                <div class="doctor-card rounded-lg p-6 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2 neon-text">${doctor.name}</h3>
+                        <p class="text-cyan-300">${doctor.specialty}</p>
+                        <p class="text-cyan-400 mt-2">${doctor.distance} miles away</p>
+                    </div>
+                    <button class="mt-4 btn-gradient text-white font-semibold py-2 px-4 rounded-lg neon-border">
+                        Contact
+                    </button>
+                </div>
+            `;
+        }
+
+        function filterDoctors() {
+            const selectedDistance = parseInt(document.getElementById('distance').value);
+            const filteredDoctors = doctors.filter(doctor => doctor.distance <= selectedDistance);
+            const doctorList = document.getElementById('doctorList');
+            doctorList.innerHTML = filteredDoctors.map(createDoctorCard).join('');
+        }
+
+        // Initial load of all doctors
+        filterDoctors();
+    </script>
+</body>
+</html>
