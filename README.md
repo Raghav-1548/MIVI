@@ -9,7 +9,7 @@ MIVI revolutionizes primary healthcare access through an AI-powered virtual clin
 3) Prescription assistance in Ayurvedic, Allopathic, Homeopathic (including dosage)
 4) Medical image analysis for disease detection
 5) MIVI-Docs: Geo-targeted consulting
-6) Stores user data on Blockchain.
+6) Stores patient data on Blockchain securely.
 
 # Dataset
 https://drive.google.com/file/d/1LuW2u3HX3V3j_6AILrewJZOonV5Bp061/view?usp=sharing
