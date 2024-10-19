@@ -1,14 +1,15 @@
 # MIVI (Machine Intelligence for Vital Insights)
 
 # Project Description
-MIVI revolutionizes primary healthcare access through an AI-powered virtual clinic. Our intelligent chatbot provides initial medical assessments, symptom analysis, and treatment suggestions across multiple medical systems. Features include medical image analysis for disease detection and MIVI-Docs for geo-targeted consulting, addressing challenges of geographical barriers, long wait times, and healthcare professional shortages.
+MIVI revolutionizes primary healthcare access through an AI-powered virtual clinic. Our intelligent chatbot provides initial medical assessments, symptom analysis, and treatment suggestions across multiple medical systems. Features include medical image analysis for disease detection and MIVI-Docs for geo-targeted consulting, addressing challenges of geographical barriers, long wait times, and healthcare professional shortages by storing patient data on a decentralized network.
 
 # Features
 1) AI-powered medical chatbot
 2) Symptom analysis and treatment suggestions
 3) Prescription assistance in Ayurvedic, Allopathic, Homeopathic (including dosage)
-Medical image analysis for disease detection
-MIVI-Docs: Geo-targeted consulting
+4) Medical image analysis for disease detection
+5) MIVI-Docs: Geo-targeted consulting
+6) Stores user data on Blockchain.
 
 # Dataset
 https://drive.google.com/file/d/1LuW2u3HX3V3j_6AILrewJZOonV5Bp061/view?usp=sharing
