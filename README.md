@@ -18,8 +18,8 @@ https://drive.google.com/file/d/1YavbcJ1jsyLIjcZxZGtv1CkD3CvedH5G/view?usp=shari
 
 # Technologies Used
 1) Python
-2_ Flask
-3)Solidity
+2) Flask
+3) Solidity
 4) Metamask
 5) Ganache
 6) HTML/CSS
