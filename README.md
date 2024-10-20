@@ -19,15 +19,14 @@ https://drive.google.com/file/d/1YavbcJ1jsyLIjcZxZGtv1CkD3CvedH5G/view?usp=shari
 
 # How to Run
 1) Clone the repository:
-git clone https://github.com/yourusername/MIVI.git
+    git clone https://github.com/yourusername/MIVI.git
+    cd MIVI
 
-cd MIVI
+2) Run the Flask application:
+  python yara.py
 
-3) Run the Flask application:
-python yara.py
-
-4) Open the URL generated in the terminal.
-5) Experience MIVI - AI-powered Virtual Clinic
+3) Open the URL generated in the terminal.
+4) Experience MIVI - AI-powered Virtual Clinic
 
 # Add any additional installation steps here, if needed
 # Technologies Used
