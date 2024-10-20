@@ -17,6 +17,18 @@ https://drive.google.com/file/d/1LuW2u3HX3V3j_6AILrewJZOonV5Bp061/view?usp=shari
 # Machine Learning Model for Medical Image Analysis - (BLIP Model)
 https://drive.google.com/file/d/1YavbcJ1jsyLIjcZxZGtv1CkD3CvedH5G/view?usp=sharing
 
+# How to Run
+1) Clone the repository:
+git clone https://github.com/yourusername/MIVI.git
+cd MIVI
+
+2) Run the Flask application:
+python yara.py
+
+3) Open the URL generated in the terminal.
+4) Experience MIVI - AI-powered Virtual Clinic
+
+# Add any additional installation steps here, if needed
 # Technologies Used
 1) Python
 2) Flask
