@@ -26,9 +26,10 @@ https://drive.google.com/file/d/1YavbcJ1jsyLIjcZxZGtv1CkD3CvedH5G/view?usp=shari
 3) Run the Flask application:
    
   a) python yara.py
-
-4) Open the URL generated in the terminal.
-5) Experience MIVI - AI-powered Virtual Clinic
+  
+4) Install metamask, Ganache and setup your wallet.
+5) Open the URL generated in the terminal.
+6) Experience MIVI - AI-powered Virtual Clinic
 
 # Add any additional installation steps here, if needed
 # Technologies Used
