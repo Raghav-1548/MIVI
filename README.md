@@ -43,12 +43,6 @@ https://drive.google.com/file/d/1YavbcJ1jsyLIjcZxZGtv1CkD3CvedH5G/view?usp=shari
 8) Node.js
 9) MongoDB
 
-# Team Members
-1) S Hari Raghava (Team Lead)
-2) Ankita Ganesh
-3) Pujari Mukthi Prasanna
-4) Akash Nadig N
-
 # Future Improvements
 1) Geo-Targeted Doctor Consulting
 2) Multi-Language Support
